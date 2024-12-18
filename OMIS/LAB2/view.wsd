@@ -1,0 +1,30 @@
+@startuml
+
+class AdminPanelView {
+    + __init__(db: Database)
+    + create_main_window(): None
+    + show_users_window(): None
+    + show_pages_window(): None
+    + show_most_active_user(): None
+    + show_average_activity(): None
+    + show_most_popular_page(): None
+    + plot_user_activity(): None
+    + plot_page_activity(): None
+    + save_to_file(filename: str, content: str): None
+    + run(): None
+}
+
+class Database {
+    + __init__()
+    + create_tables(): None
+    + get_users(): List[Tuple]
+    + get_pages(): List[Tuple]
+    + get_most_active(): Tuple
+    + get_average_likes_and_comments(): Tuple
+    + get_most_popular_page(): Tuple
+    + close(): None
+}
+
+AdminPanelView --> Database : uses
+
+@enduml

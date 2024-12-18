@@ -1,0 +1,128 @@
+@startuml
+
+class Application {
+  + getRequiredService(type: Class | Interface): object
+}
+class UserController {
+    + create_user(email: str, username: str, password: str): User
+    + delete_user(user_id: int): None
+    + update_user(user_id: int, new_data: str): User
+    + get_user(email: str): User
+}
+
+class PageController {
+    + add_page(title: str): Page
+    + get_page(page_id: int): Page
+}
+
+class ReportController {
+    + create_report(title: str, format: str): Report
+    + generate_report(report_id: int): None
+}
+
+class AdminPanelController {
+    + manage_user(action: str, user_email: str): User
+    + make_report(title: str, format: str): Report
+}
+
+
+class RegularUser {
+    -is_admin
+    - user_id: int
+    - username: str
+    - email: str
+    - likes: List
+    - comments: List
+    - country: str
+    + view_page(page_id: int): None
+    + like_page(page_id: int): None
+    + comment_on_page(page_id: int, comment: str): None
+}
+
+class Admin {
+    -is_admin
+    - user_id: int
+    - username: str
+    - email: str
+    - likes: List
+    - comments: List
+    - country: str
+    + manage_users(action: str, user_email: str): User
+    + generate_report(report_id: int): None
+}
+
+class ReportImpl {
+    - report_id: int
+    - content: str
+    - title: str
+    - format: str
+    - date: datetime
+}
+
+class UserManagerImpl {
+    + delete_user(User): None
+    + create_user(email: str, username: str, password: str): User
+    + update_user(data: str): User
+    + get_user(email: str): User
+}
+
+class PageManagerImpl {
+    + add_page(title: str): Page
+    + get_page(page_id: int): Page
+}
+
+class ReportManagerImpl {
+    - data: dict
+    + create_report(title: str, format: str): Report
+}
+
+
+abstract class UserManager{
+    + delete_user(User): None
+    + create_user(email: str, username: str, password: str): User
+    + update_user(data: str): User
+    + get_user(email: str): User
+}
+
+abstract class PageManager{
+    + add_page(title: str): Page
+    + get_page(page_id: int): Page
+}
+
+abstract class ReportManager {
+    - data: dict
+    + create_report(title: str, format: str): Report
+}
+class SubscriptionController {
+    + create_subscription(user_id: int, plan_id: int): Subscription
+    + cancel_subscription(subscription_id: int): None
+    + get_subscription(user_id: int): Subscription
+
+}
+
+class NotificationController {
+    + send_notification(user_id: int, message: str): Notification
+    + get_notifications(user_id: int): List<Notification>
+    + mark_as_read(notification_id: int): None
+}
+
+UserManager <-- UserManagerImpl
+PageManager <-- PageManagerImpl
+ReportManager <-- ReportManagerImpl
+Application --> UserController : uses
+Application --> PageController : uses
+Application --> ReportController : uses
+Application --> AdminPanelController : uses
+UserController o-- UserManagerImpl : 1..1
+UserController --> RegularUser : manages
+UserController -->  Admin: manages
+PageController o-- PageManagerImpl : 1..1
+PageController --> AdminPanel : manages
+ReportController o-- ReportManagerImpl : 1..1
+ReportController --> ReportImpl : manages
+AdminPanelController o-- AdminPanel : 1..1
+Application --> SubscriptionController : uses
+Application --> NotificationController : uses
+
+@enduml
+

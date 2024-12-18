@@ -1,0 +1,135 @@
+@startuml
+class Application {
+  + getRequiredService(type: Class | Interface): object
+}
+abstract class User {
+
+    + visit_page(page_id: int): None
+    + like_page(page_id: int): None
+    + comment_on_page(page_id: int, comment: str): None
+}
+
+class RegularUser {
+    -is_admin
+    - user_id: int
+    - username: str
+    - email: str
+    - likes: int
+    - comments: int
+    - country: str
+    + view_page(page_id: int): None
+    + like_page(page_id: int): None
+    + comment_on_page(page_id: int, comment: str): None
+}
+
+abstract class UserManager {
+    + delete_user(): None
+    + create_user(): None
+    + update_user(): None
+    + get_user(): User
+}
+
+class UserManagerImpl {
+    + delete_user(User_id): None
+    + create_user(email: str, username: str, password: str,country: str): None
+    + update_user(email: str, username: str, password: str,country: str): None
+    + get_user(id: int): User
+}
+
+class Admin {
+    -is_admin
+    - user_id: int
+    - username: str
+    - email: str
+    - likes: int
+    - comments: int
+    - country: str
+
+}
+
+abstract class Page {
+    - page_id: int
+    - content: str
+    - likes: int
+}
+
+
+class PageImpl {
+    - page_id: int
+    - content: str
+    - likes: int
+}
+
+abstract class ReportManager {
+    - data: dict
+    + create_report(title: str, format: str): Report
+}
+
+class ReportManagerImpl {
+    - data: dict
+    + create_report(title: str, format: str): Report
+}
+
+class AdminPanel {
+    - report_manager: ReportManager
+    + display(): None
+    + make_report(title: str, format: str): Report
+}
+
+abstract class Report {
+    - report_id: int
+    - content: str
+    - title: str
+    - format: str
+    - date: datetime
+
+}
+
+class ReportImpl {
+    - report_id: int
+    - content: str
+    - title: str
+    - format: str
+    - date: datetime
+}
+
+class PageManagerImpl {
+    + add_page(title: str): Page
+    + get_page(page_id: int): Page
+}
+
+abstract class PageManager{
+    + add_page(title: str): Page
+    + get_page(page_id: int): Page
+}
+
+
+RegularUser --> Notification : receives
+NotificationManager --> Notification : creates
+NotificationManager --> RegularUser : retrieves
+User <.. RegularUser 
+User <.. Admin
+RegularUser --> Subscription : subscribes
+Subscription --> SubscriptionPlan : has
+Subscription --> Payment : processes
+Page <.. AdminPanel
+Page <.. PageImpl
+PageManager <.. PageManagerImpl
+PageManagerImpl --> AdminPanel : manages
+PageManagerImpl --> PageImpl : manages
+ReportManager <.. ReportManagerImpl
+Report <.. ReportImpl
+UserManagerImpl ..> UserManager
+AdminPanel --> ReportManagerImpl : uses
+ReportManagerImpl --> ReportImpl: manipulates
+Admin --> UserManagerImpl : manages
+UserManagerImpl --> RegularUser: manipulates
+
+AdminPanel --> ReportImpl : creates
+Application --> UserManagerImpl: instantiate
+Application --> PageManagerImpl: instantiate
+Application --> ReportManagerImpl: instantiate
+
+
+@enduml
+

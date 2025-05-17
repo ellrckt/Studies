@@ -1,113 +1,54 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Графический редактор</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f8;
-        }
+# Лабораторная работа №5: Построение и анализ полигонов
 
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-        }
+## Цель работы
 
-        #container {
-            display: flex;
-            padding: 20px;
-            gap: 20px;
-        }
+Разработать графический редактор, позволяющий:
+- строить полигоны,
+- проверять их на **выпуклость**,
+- находить **внутренние нормали**,
+- строить **выпуклые оболочки** двумя методами:  
+  - **обход Грэхема**,  
+  - **обход Джарвиса** (алгоритм заворачивания подарка),
+- определять принадлежность точки полигону,
+- находить пересечение отрезка со стороной полигона.
 
-        #canvasContainer {
-            flex-grow: 1;
-        }
+Программа должна предоставлять удобный пользовательский интерфейс с панелью управления и поддержкой мыши для построения объектов.
 
-        canvas {
-            width: 100%;
-            height: auto;
-            max-height: 800px;
-            border: 2px solid #ccc;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
+---
 
-        #toolPanel {
-            width: 300px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            padding: 20px;
-        }
+## Описание реализации
 
-        .toolGroup {
-            margin-bottom: 20px;
-        }
+### Технологии
+- HTML5 Canvas
+- JavaScript (без использования фреймворков)
+- Алгоритмы вычислительной геометрии
 
-        .toolGroup h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 16px;
-            color: #333;
-        }
+---
 
-        .button {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            color: white;
-            background-color: #3498db;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-bottom: 10px;
-            transition: background-color 0.3s ease;
-        }
+## Как использовать программу
 
-        .button:hover {
-            background-color: #2980b9;
-        }
+1. **Открытие программы**
+   - Откройте файл `index.html` в браузере.
 
-        .button:active {
-            background-color: #2573a6;
-        }
-    </style>
-</head>
-<body>
+2. **Построение полигона**
+   - Кликните мышью на холсте — будут добавляться точки.
+   - Чтобы завершить построение, кликните на первую точку или нажмите `Enter`.
 
-<header>Графический редактор — Лабораторная работа №5</header>
+3. **Анализ полигона**
+   - Нажмите кнопку **"Проверить на выпуклость"** — результат отобразится в консоли.
+   - Нажмите **"Рассчитать нормали"** — будут нарисованы внутренние нормали к сторонам.
 
-<div id="container">
-    <div id="canvasContainer">
-        <canvas id="cnv" width="1300" height="800"></canvas>
-    </div>
-    <div id="toolPanel">
-        <div class="toolGroup">
-            <h3>Проверка полигона</h3>
-            <button class="button" onclick="checkConvexity()">Проверить на выпуклость</button>
-            <button class="button" onclick="calculateNormals()">Рассчитать нормали</button>
-        </div>
-        <div class="toolGroup">
-            <h3>Выпуклая оболочка</h3>
-            <button class="button" onclick="computeConvexHullGraham()">Метод Грэхема</button>
-            <button class="button" onclick="computeConvexHullJarvis()">Метод Джарвиса</button>
-        </div>
-        <div class="toolGroup">
-            <h3>Дополнительно</h3>
-            <button class="button" onclick="clearApp()">Очистить всё</button>
-        </div>
-    </div>
-</div>
+4. **Построение выпуклых оболочек**
+   - Нажмите **"Метод Грэхема"** или **"Метод Джарвиса"** — программа построит выпуклую оболочку вокруг всех точек.
 
-<script defer src="main.js"></script>
+5. **Очистка**
+   - Нажмите **"Очистить всё"**, чтобы начать заново.
 
-</body>
-</html>
+---
+
+## Интерфейс
+![image](https://github.com/user-attachments/assets/b38fa4f6-d10a-4b7b-af36-2a517059501e)
+
+![image](https://github.com/user-attachments/assets/470fbd8c-20e4-4fb8-9af8-fada23a51346)
+![image](https://github.com/user-attachments/assets/34d19f6e-d734-43b4-9384-a7122a60052c)
+

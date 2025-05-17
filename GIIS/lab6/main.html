@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Графический редактор</title>
+    <style>
+        :root {
+            --primary-color: #5e35b1;
+            --secondary-color: #3949ab;
+            --accent-color: #7c4dff;
+            --light-color: #f5f5f5;
+            --dark-color: #212121;
+            --success-color: #43a047;
+            --warning-color: #fb8c00;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fafafa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        #container {
+            display: flex;
+            min-height: 100vh;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        #canvasContainer {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        canvas {
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        #toolPanel {
+            width: 280px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-color);
+        }
+
+        .toolGroup {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toolGroup-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolGroup-title::before {
+            content: "";
+            display: block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+        }
+
+        button {
+            padding: 12px 16px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+            border-radius: 8px;
+            border: none;
+            color: white;
+            background-color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active {
+            background-color: var(--accent-color);
+            transform: translateY(0);
+        }
+
+        button.active {
+            background-color: var(--accent-color);
+            box-shadow: 0 0 0 2px white, 0 0 0 4px var(--accent-color);
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            padding: 5px;
+            background: white;
+            border: 2px solid #e0e0e0;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 5px;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 10px 0;
+        }
+
+        .status-bar {
+            margin-top: auto;
+            padding: 10px;
+            background-color: var(--light-color);
+            border-radius: 5px;
+            font-size: 0.9rem;
+            color: var(--dark-color);
+        }
+
+        @media (max-width: 768px) {
+            #container {
+                flex-direction: column;
+            }
+            #toolPanel {
+                width: 100%;
+            }
+            canvas {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <div id="canvasContainer">
+        <canvas id="canvas" width="1000" height="700"></canvas>
+    </div>
+    <div id="toolPanel">
+        <h1 class="panel-title">Графический редактор</h1>
+        
+        <div class="toolGroup">
+            <h2 class="toolGroup-title">Инструменты рисования</h2>
+            <button id="drawCircle">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" stroke-width="2"/>
+                </svg>
+                Круг
+            </button>
+            <button id="drawSquare">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 3H21V21H3V3Z" stroke="white" stroke-width="2"/>
+                </svg>
+                Квадрат
+            </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="toolGroup">
+            <h2 class="toolGroup-title">Инструменты заливки</h2>
+            <button id="fillZatr">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L4 7L12 12L20 7L12 2Z" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M4 12L12 17L20 12" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M4 17L12 22L20 17" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+                Затравкой
+            </button>
+            <button id="fillRazv">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 17H21" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M3 12H21" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M3 7H21" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Разверткой
+            </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="toolGroup">
+            <h2 class="toolGroup-title">Цвет заливки</h2>
+            <input type="color" id="fillColorPicker" value="#5e35b1">
+        </div>
+
+        <div class="status-bar" id="statusBar">
+            Выберите инструмент для начала работы
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const statusBar = document.getElementById('statusBar');
+        
+        const state = {
+            isDrawing: false,
+            startX: 0,
+            startY: 0,
+            currentShape: null,
+            fillColor: [94, 53, 177, 255], 
+            fillMethod: null,
+            isFilling: false,
+            debugMode: true
+        };
+
+        const drawCircleButton = document.getElementById('drawCircle');
+        const drawSquareButton = document.getElementById('drawSquare');
+        const fillZatrButton = document.getElementById('fillZatr');
+        const fillRazvButton = document.getElementById('fillRazv');
+        const fillColorPicker = document.getElementById('fillColorPicker');
+
+        ctx.strokeStyle = '#5e35b1';
+        ctx.lineWidth = 2;
+        
+        canvas.addEventListener('mousedown', handleMouseDown);
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('mouseup', handleMouseUp);
+        
+        drawCircleButton.addEventListener('click', () => {
+            resetTools();
+            state.currentShape = 'circle';
+            state.isFilling = false;
+            drawCircleButton.classList.add('active');
+            updateStatus('Режим рисования: Круг. Кликните и тяните для создания.');
+        });
+        
+        drawSquareButton.addEventListener('click', () => {
+            resetTools();
+            state.currentShape = 'square';
+            state.isFilling = false;
+            drawSquareButton.classList.add('active');
+            updateStatus('Режим рисования: Квадрат. Кликните и тяните для создания.');
+        });
+        
+        fillZatrButton.addEventListener('click', () => {
+            resetTools();
+            state.fillMethod = 'zatr';
+            state.isFilling = true;
+            fillZatrButton.classList.add('active');
+            updateStatus('Режим заливки: Затравка. Кликните внутри области для заливки.');
+        });
+        
+        fillRazvButton.addEventListener('click', () => {
+            resetTools();
+            state.fillMethod = 'razv';
+            state.isFilling = true;
+            fillRazvButton.classList.add('active');
+            updateStatus('Режим заливки: Развертка. Кликните внутри области для заливки.');
+        });
+        
+        fillColorPicker.addEventListener('input', (e) => {
+            const hexColor = e.target.value;
+            state.fillColor = hexToRgb(hexColor);
+            updateStatus(`Цвет заливки изменен на: ${hexColor}`);
+        });
+
+        function handleMouseDown(e) {
+            state.startX = e.offsetX;
+            state.startY = e.offsetY;
+            
+            if (!state.isFilling) {
+                state.isDrawing = true;
+                ctx.beginPath();
+                ctx.moveTo(state.startX, state.startY);
+            } else {
+                applyFill(state.startX, state.startY);
+            }
+        }
+
+        function handleMouseMove(e) {
+            if (!state.isDrawing) return;
+            
+            const currentX = e.offsetX;
+            const currentY = e.offsetY;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (state.currentShape === 'circle') {
+                const radius = Math.sqrt(Math.pow(currentX - state.startX, 2) + Math.pow(currentY - state.startY, 2));
+                drawCircle(state.startX, state.startY, radius);
+            } else if (state.currentShape === 'square') {
+                drawSquare(state.startX, state.startY, currentX - state.startX, currentY - state.startY);
+            }
+        }
+
+        function handleMouseUp(e) {
+            if (!state.isDrawing) return;
+            
+            state.isDrawing = false;
+            const endX = e.offsetX;
+            const endY = e.offsetY;
+            
+            if (state.currentShape === 'circle') {
+                const radius = Math.sqrt(Math.pow(endX - state.startX, 2) + Math.pow(endY - state.startY, 2));
+                drawCircle(state.startX, state.startY, radius);
+            } else if (state.currentShape === 'square') {
+                drawSquare(state.startX, state.startY, endX - state.startX, endY - state.startY);
+            }
+        }
+
+        function drawCircle(x, y, radius) {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+
+        function drawSquare(x, y, width, height) {
+            ctx.strokeRect(x, y, width, height);
+        }
+
+        function applyFill(x, y) {
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            const clickedPixel = (y * canvas.width + x) * 4;
+            const targetColor = [
+                data[clickedPixel],
+                data[clickedPixel + 1],
+                data[clickedPixel + 2],
+                data[clickedPixel + 3]
+            ];
+
+            if (arraysEqual(state.fillColor, targetColor)) return;
+
+            if (state.fillMethod === 'zatr') {
+                fillFlood(x, y, targetColor, state.fillColor, data, canvas.width, canvas.height);
+            } else {
+                fillScanline(x, y, targetColor, state.fillColor, data, canvas.width, canvas.height);
+            }
+
+            if (!state.debugMode) {
+                ctx.putImageData(imageData, 0, 0);
+            }
+        }
+
+        function fillFlood(x, y, targetColor, fillColor, data, width, height) {
+            const stack = [[x, y]];
+            const baseColor = getPixelColor(x, y, data, width);
+
+            while (stack.length) {
+                const [currentX, currentY] = stack.pop();
+
+                if (currentX < 0 || currentX >= width || currentY < 0 || currentY >= height) {
+                    continue;
+                }
+
+                const pixelColor = getPixelColor(currentX, currentY, data, width);
+                
+                if (arraysEqual(pixelColor, baseColor) && !arraysEqual(pixelColor, fillColor)) {
+                    setPixelColor(currentX, currentY, fillColor, data, width);
+                    debugDraw(currentX, currentY, fillColor);
+
+                    stack.push([currentX - 1, currentY]);
+                    stack.push([currentX + 1, currentY]);
+                    stack.push([currentX, currentY - 1]);
+                    stack.push([currentX, currentY + 1]);
+                }
+            }
+        }
+
+        function fillScanline(x, y, targetColor, fillColor, data, width, height) {
+            const baseColor = getPixelColor(x, y, data, width);
+            const stack = [[x, y]];
+
+            while (stack.length) {
+                const [currentX, currentY] = stack.pop();
+                let leftX = currentX;
+                let rightX = currentX;
+
+                while (leftX >= 0 && arraysEqual(getPixelColor(leftX, currentY, data, width), baseColor)) {
+                    leftX--;
+                }
+                leftX++;
+
+                while (rightX < width && arraysEqual(getPixelColor(rightX, currentY, data, width), baseColor)) {
+                    rightX++;
+                }
+                rightX--;
+
+                for (let x = leftX; x <= rightX; x++) {
+                    setPixelColor(x, currentY, fillColor, data, width);
+                    debugDraw(x, currentY, fillColor);
+                }
+
+                if (currentY > 0) {
+                    let prevY = currentY - 1;
+                    let inSegment = false;
+                    for (let x = leftX; x <= rightX; x++) {
+                        const color = getPixelColor(x, prevY, data, width);
+                        if (!inSegment && arraysEqual(color, baseColor)) {
+                            stack.push([x, prevY]);
+                            inSegment = true;
+                        } else if (inSegment && !arraysEqual(color, baseColor)) {
+                            inSegment = false;
+                        }
+                    }
+                }
+
+                if (currentY < height - 1) {
+                    let nextY = currentY + 1;
+                    let inSegment = false;
+                    for (let x = leftX; x <= rightX; x++) {
+                        const color = getPixelColor(x, nextY, data, width);
+                        if (!inSegment && arraysEqual(color, baseColor)) {
+                            stack.push([x, nextY]);
+                            inSegment = true;
+                        } else if (inSegment && !arraysEqual(color, baseColor)) {
+                            inSegment = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        function getPixelColor(x, y, data, width) {
+            const pixelIndex = (y * width + x) * 4;
+            return [
+                data[pixelIndex],
+                data[pixelIndex + 1],
+                data[pixelIndex + 2],
+                data[pixelIndex + 3]
+            ];
+        }
+
+        function setPixelColor(x, y, color, data, width) {
+            const pixelIndex = (y * width + x) * 4;
+            data[pixelIndex] = color[0];
+            data[pixelIndex + 1] = color[1];
+            data[pixelIndex + 2] = color[2];
+            data[pixelIndex + 3] = color[3];
+        }
+
+        function debugDraw(x, y, color) {
+            if (state.debugMode) {
+                setTimeout(() => {
+                    ctx.fillStyle = `rgba(${color.join()})`;
+                    ctx.fillRect(x, y, 1, 1);
+                }, 0);
+            }
+        }
+
+        function hexToRgb(hex) {
+            const bigint = parseInt(hex.slice(1), 16);
+            return [
+                (bigint >> 16) & 255,
+                (bigint >> 8) & 255,
+                bigint & 255,
+                255
+            ];
+        }
+
+        function arraysEqual(a, b) {
+            return a.length === b.length && a.every((val, i) => val === b[i]);
+        }
+
+        function resetTools() {
+            drawCircleButton.classList.remove('active');
+            drawSquareButton.classList.remove('active');
+            fillZatrButton.classList.remove('active');
+            fillRazvButton.classList.remove('active');
+            
+            state.currentShape = null;
+            state.fillMethod = null;
+            state.isFilling = false;
+        }
+
+        function updateStatus(message) {
+            statusBar.textContent = message;
+        }
+
+        updateStatus('Выберите инструмент для начала работы');
+    });
+</script>
+</body>
+</html>

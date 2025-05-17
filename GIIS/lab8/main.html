@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Графический редактор</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #container {
+            display: flex;
+            align-items: flex-start;
+            margin: 20px;
+        }
+
+        #canvasContainer {
+            margin-right: 20px;
+        }
+
+        canvas {
+            border: 1px solid #ccc;
+        }
+
+        #toolPanel {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .toolGroup {
+            margin-bottom: 10px;
+        }
+
+        .toolGroup label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .tool {
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+
+        .tool input[type="radio"] {
+            margin-right: 5px;
+        }
+    </style>
+
+    <script defer src="LW6.js"></script>
+</head>
+<body>
+    <div id="container">
+        <div id="canvasContainer">
+            <canvas id="canvas" width="1300" height="800"></canvas>
+        </div>
+        <div id="toolPanel">
+            <div class="toolGroup">
+
+                <div class="tool">
+                    <input type="radio" name="tool" value="coen" id="tool-coen" checked>
+                    <label for="tool-coen">Алгоритм Коэна — Сазерленда</label>
+                </div>
+                <div class="tool">
+                    <input type="radio" name="tool" value="liang" id="tool-liang">
+                    <label for="tool-liang">Алгоритм Лианга — Барски</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script defer src="main.js"></script>
+</body>
+</html>
